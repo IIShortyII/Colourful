@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             BitmapFactory.Options bitMapOption=new BitmapFactory.Options();
             bitMapOption.inJustDecodeBounds=true;
 
-            //TODO: File Not found exception kommt obwohl datei erstellt wird. 
+            //TODO: File Not found exception kommt obwohl datei erstellt wird.
             BitmapFactory.decodeFile(currentPath.getPath(), bitMapOption);
             Log.d("Path of Bitmap Factory:", currentPath.getPath());
 
