@@ -31,13 +31,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
+    //Creating Figures
     Button btn_takePic;
     ImageView m_imgV_Main;
     ImageView imgV_Point;
     TextView txt_breite;
     TextView txt_hohe;
-    String m_currentPhotoPath;
+    //String m_currentPhotoPath;
+    Uri currentPath;
     Bitmap m_Bitmap;
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        //Find Figures and Implement them
         btn_takePic = (Button) findViewById(R.id.btn_takepic);
         m_imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
         imgV_Point = (ImageView) findViewById(R.id.imgV_MiddleMarker);
@@ -57,76 +59,90 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+        //Pre-creating Dummy File to save pictures
         imgV_Point.setVisibility(View.INVISIBLE);
 
+
+        //Taking Picture when Button is pressed
         btn_takePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Uri DummyUri = setDummyFile();
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {          //Checking if Cam available
+                    if (DummyUri != null) {                                                        //Checking if Dummy File is available
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, DummyUri);                  //Define Saveing Path for taken Pic
+                        //Toast.makeText(getApplicationContext(),DummyUri.toString(),Toast.LENGTH_LONG).show();
+                        startActivityForResult(cameraIntent, 0);                    //Open Camera
 
-                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                    // Create the File where the photo should go
-                    Toast.makeText(getApplicationContext(),"Sind Drinnen",Toast.LENGTH_SHORT).show();
-                    File photoFile = null;
-                    try {
-                        photoFile = createImageFile();
-                    } catch (IOException ex) {
-                        // Error occurred while creating the File
-                        //Log.i(TAG, "IOException");
-                    }
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
-                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
                         }
                 }
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 0 && resultCode == RESULT_OK) {
+            //Show taken picture in ImageView
+            try {
+                m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPath);
+                m_imgV_Main.setImageBitmap(m_Bitmap);
+                imgV_Point.setVisibility(View.VISIBLE);
+                //Toast.makeText(getApplicationContext(),currentPath.toString(), Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            BitmapFactory.Options bitMapOption=new BitmapFactory.Options();
+            bitMapOption.inJustDecodeBounds=true;
+
+            //TODO: File Not found exception kommt obwohl datei erstellt wird. 
+            BitmapFactory.decodeFile(currentPath.getPath(), bitMapOption);
+            Log.d("Path of Bitmap Factory:", currentPath.getPath());
+
+
+            txt_breite.setText(String.valueOf( bitMapOption.outWidth));
+            txt_hohe.setText(String.valueOf( bitMapOption.outHeight));
+            Log.d("Breite",""+bitMapOption.outWidth);
+            Log.d("Höhe",""+bitMapOption.outHeight);
+            }
+
+        }
+
+
+
+
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "BMP_" + timeStamp + "_";
+        //TODO: Change DummyFile Directory to Internal App Temp File Directory? getFilesDir()??
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  // prefix
-                ".jpg",         // suffix
+                ".bmp",         // suffix
                 storageDir      // directory
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        m_currentPhotoPath = "file:" + image.getAbsolutePath();
+        //m_currentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            try {
-                m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(m_currentPhotoPath));
-                m_imgV_Main.setImageBitmap(m_Bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+    private Uri setDummyFile(){
+        Uri photoURI = null;
+        try {
+            photoURI = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", createImageFile());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    }
-
-/*
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //Toast.makeText(getApplicationContext(),"Drinnen",Toast.LENGTH_SHORT).show();
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK ) {
-            File imgFile = new File(currentPhotoPath);
-            if (imgFile.exists()) {
-                Bitmap Photo = BitmapFactory.decodeFile(currentPhotoPath);
-                imgV_Main.setImageBitmap(Photo);
-                imgV_Point.setVisibility(View.VISIBLE);
-            }
-
-        }}
-*/
-
+        currentPath = photoURI;
+        return photoURI;}
 
 
 
