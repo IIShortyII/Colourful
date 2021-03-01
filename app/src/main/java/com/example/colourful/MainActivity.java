@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -32,12 +33,13 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     Button btn_takePic;
-    ImageView imgV_Main;
+    ImageView m_imgV_Main;
     ImageView imgV_Point;
     TextView txt_breite;
     TextView txt_hohe;
-    String currentPhotoPath;
-    private Object Bitmap;
+    String m_currentPhotoPath;
+    Bitmap m_Bitmap;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
     @Override
@@ -47,24 +49,74 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btn_takePic = (Button) findViewById(R.id.btn_takepic);
-        imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
+        m_imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
         imgV_Point = (ImageView) findViewById(R.id.imgV_MiddleMarker);
         txt_breite = (TextView) findViewById(R.id.txt_breite);
         txt_hohe = (TextView) findViewById(R.id.txt_hohe);
+
+
+
+
 
         imgV_Point.setVisibility(View.INVISIBLE);
 
         btn_takePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dispatchTakePictureIntent();
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
+                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                    // Create the File where the photo should go
+                    Toast.makeText(getApplicationContext(),"Sind Drinnen",Toast.LENGTH_SHORT).show();
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                        //Log.i(TAG, "IOException");
+                    }
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+                        startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+                        }
+                }
             }
         });
     }
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0 && resultCode == Activity.RESULT_OK ) {
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  // prefix
+                ".jpg",         // suffix
+                storageDir      // directory
+        );
 
+        // Save a file: path for use with ACTION_VIEW intents
+        m_currentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            try {
+                m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(m_currentPhotoPath));
+                m_imgV_Main.setImageBitmap(m_Bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+/*
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //Toast.makeText(getApplicationContext(),"Drinnen",Toast.LENGTH_SHORT).show();
+        if (requestCode == 0 && resultCode == Activity.RESULT_OK ) {
             File imgFile = new File(currentPhotoPath);
             if (imgFile.exists()) {
                 Bitmap Photo = BitmapFactory.decodeFile(currentPhotoPath);
@@ -73,58 +125,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }}
+*/
 
-    //TODO: String vom Bild auslesen und in die Methode eingeben!
 
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        txt_breite.setText("Button geht");
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
 
-            try {
-                photoFile = createImageFile();
 
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, 0);
-            }
-        }
-    }
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "BMP_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".bmp",         /* suffix */
-                storageDir      /* directory */
-        );
 
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-/*
-     public void scanningImage(Bitmap Photo, Intent data){
-         Photo = (Bitmap)data.getExtras().get("data");
-         Bitmap picture = BitmapFactory.decodeFile(toString(Photo));
-         int Width = picture.getWidth();
-         int Height = picture.getHeight();
-         txt_breite.setText(Width);
-         txt_hohe.setText(Height);
-     }*/
+
+
+
+
+
 
 
 
