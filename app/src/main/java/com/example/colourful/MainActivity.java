@@ -3,6 +3,7 @@ package com.example.colourful;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
@@ -12,11 +13,13 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -34,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     //Creating Figures
     Button btn_takePic;
     ImageView m_imgV_Main;
-    ImageView imgV_Point;
     TextView txt_breite;
     TextView txt_hohe;
     //String m_currentPhotoPath;
@@ -52,35 +54,33 @@ public class MainActivity extends AppCompatActivity {
         //Find Figures and Implement them
         btn_takePic = (Button) findViewById(R.id.btn_takepic);
         m_imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
-        imgV_Point = (ImageView) findViewById(R.id.imgV_MiddleMarker);
         txt_breite = (TextView) findViewById(R.id.txt_breite);
         txt_hohe = (TextView) findViewById(R.id.txt_hohe);
 
 
-
-
-        //Pre-creating Dummy File to save pictures
-        imgV_Point.setVisibility(View.INVISIBLE);
-
-
-        //Taking Picture when Button is pressed
+//Taking Picture when Button is pressed
         btn_takePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri DummyUri = setDummyFile();
+                //Todo: Delete Old Files if Cache is to big
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {          //Checking if Cam available
-                    if (DummyUri != null) {                                                        //Checking if Dummy File is available
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, DummyUri);                  //Define Saveing Path for taken Pic
-                        //Toast.makeText(getApplicationContext(),DummyUri.toString(),Toast.LENGTH_LONG).show();
-                        startActivityForResult(cameraIntent, 0);                    //Open Camera
 
+                //Checking if Cam available
+                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                    //Checking if Dummy File is available
+                    if (DummyUri != null) {
+                        //Define Saving Path for taken Picture
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, DummyUri);
+                        //Open Camera
+                        startActivityForResult(cameraIntent, 0);
                         }
                 }
             }
         });
     }
-
+//Receiving Taken Picture
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -90,33 +90,65 @@ public class MainActivity extends AppCompatActivity {
             try {
                 m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPath);
                 m_imgV_Main.setImageBitmap(m_Bitmap);
-                imgV_Point.setVisibility(View.VISIBLE);
-                //Toast.makeText(getApplicationContext(),currentPath.toString(), Toast.LENGTH_LONG).show();
+
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.e("ERROR ","Error while showing Picture in ImgView with Path: "+currentPath);
             }
 
-            BitmapFactory.Options bitMapOption=new BitmapFactory.Options();
-            bitMapOption.inJustDecodeBounds=true;
+//Creating OnTouchListener for User selected area of Colour
+    m_imgV_Main.setOnTouchListener(new View.OnTouchListener(){
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+         if(event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE){
+             m_imgV_Main.setDrawingCacheEnabled(true);
+             m_imgV_Main.buildDrawingCache(true);
+             Bitmap BitmapBuffer = m_imgV_Main.getDrawingCache();
 
-            //TODO: File Not found exception kommt obwohl datei erstellt wird.
-            BitmapFactory.decodeFile(currentPath.getPath(), bitMapOption);
-            Log.d("Path of Bitmap Factory:", currentPath.getPath());
+             int pixelBuffer = BitmapBuffer.getPixel((int) event.getX(),(int)event.getY());
 
+             //getting RGB values
+                  int r = Color.red(pixelBuffer);
+                  int g = Color.green(pixelBuffer);
+                  int b = Color.blue(pixelBuffer);
 
-            txt_breite.setText(String.valueOf( bitMapOption.outWidth));
-            txt_hohe.setText(String.valueOf( bitMapOption.outHeight));
-            Log.d("Breite",""+bitMapOption.outWidth);
-            Log.d("Höhe",""+bitMapOption.outHeight);
+             //getting Hex value
+                  String hex = Integer.toHexString(pixelBuffer);
+                  hex = "#" + hex.substring(2);
+
+             //Give User RGB and Hex Code of selected Colour
+                  txt_breite.setText("RGB Code: "+r +","+g +","+b);
+                  txt_hohe.setText("HEX Code: " + hex);
+                  Log.i("RGB Code",r +","+g +","+b);
+                  Log.i("HEX Code", hex);
+                    }
+                    return true;
+                }
+            });
             }
-
         }
 
 
 
 
+//--------------------------BEGIN OF SUBROUTINES----------------------------
+
+//Create DummyFile to Check if file is already there
+    private Uri setDummyFile(){
+        Uri photoURI = null;
+        try {
+            photoURI = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", createImageFile());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("ERROR","DummyFile Path or Name is already used!");
+        }
+        currentPath = photoURI;
+        return photoURI;}
+
+
+
+//Creating FilePath for DummyFile and Manages FileName
     private File createImageFile() throws IOException {
-        // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "BMP_" + timeStamp + "_";
         //TODO: Change DummyFile Directory to Internal App Temp File Directory? getFilesDir()??
@@ -127,24 +159,8 @@ public class MainActivity extends AppCompatActivity {
                 ".bmp",         // suffix
                 storageDir      // directory
         );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        //m_currentPhotoPath = "file:" + image.getAbsolutePath();
         return image;
     }
-
-
-    private Uri setDummyFile(){
-        Uri photoURI = null;
-        try {
-            photoURI = FileProvider.getUriForFile(this, this.getApplicationContext().getPackageName() + ".provider", createImageFile());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        currentPath = photoURI;
-        return photoURI;}
-
-
 
 
 

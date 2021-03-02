@@ -32,17 +32,6 @@
 
         tools:srcCompat="@color/colorPrimary" />
 
-    <ImageView
-        android:id="@+id/imgV_MiddleMarker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/imgV_Main"
-        app:layout_constraintEnd_toEndOf="@+id/imgV_Main"
-        app:layout_constraintStart_toStartOf="@+id/imgV_Main"
-        app:layout_constraintTop_toTopOf="@+id/imgV_Main"
-        app:srcCompat="@android:drawable/dialog_frame" />
-
     <TextView
         android:id="@+id/txt_hohe"
         android:layout_width="wrap_content"
