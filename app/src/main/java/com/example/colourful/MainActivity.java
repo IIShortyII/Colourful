@@ -4,15 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,21 +18,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import java.util.*;
+
+
 
 public class MainActivity extends AppCompatActivity {
     //Creating Figures
     Button btn_takePic;
     ImageView m_imgV_Main;
-    TextView txt_breite;
-    TextView txt_hohe;
+    TextView txt_RGB;
+    TextView txt_HEX;
     //String m_currentPhotoPath;
     Uri currentPath;
     Bitmap m_Bitmap;
@@ -54,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         //Find Figures and Implement them
         btn_takePic = (Button) findViewById(R.id.btn_takepic);
         m_imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
-        txt_breite = (TextView) findViewById(R.id.txt_breite);
-        txt_hohe = (TextView) findViewById(R.id.txt_hohe);
+        txt_RGB = (TextView) findViewById(R.id.txt_RGB);
+        txt_HEX = (TextView) findViewById(R.id.txt_HEX);
 
 
 //Taking Picture when Button is pressed
@@ -90,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPath);
                 m_imgV_Main.setImageBitmap(m_Bitmap);
-
+                txt_HEX.setText("HEX Code: #ffffff");
+                txt_RGB.setText("RGB Code: 0,0,0");
             } catch (IOException e) {
                 e.printStackTrace();
                 Log.e("ERROR ","Error while showing Picture in ImgView with Path: "+currentPath);
@@ -117,13 +113,28 @@ public class MainActivity extends AppCompatActivity {
                   hex = "#" + hex.substring(2);
 
              //Give User RGB and Hex Code of selected Colour
-                  txt_breite.setText("RGB Code: "+r +","+g +","+b);
-                  txt_hohe.setText("HEX Code: " + hex);
+                  txt_RGB.setText("RGB Code: "+r +","+g +","+b);
+                  txt_HEX.setText("HEX Code: " + hex);
                   Log.i("RGB Code",r +","+g +","+b);
                   Log.i("HEX Code", hex);
+
+             //Getting Colour Name
+
+
+
+
+
+
+
                     }
                     return true;
                 }
+
+
+
+
+
+
             });
             }
         }
@@ -170,6 +181,79 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+//-------------------------------------------------------------------------------------------------
+/*
+    public class GetColourSearch {
+        public class ColourCodeInput1 {
+            String ColourName;
+            int red;
+            int green;
+            int blue;
+
+            public void ColourCodeInput(String ColourName, int red, int green, int blue) {
+                this.ColourName = ColourName;
+                this.red = red;
+                this.green = green;
+                this.blue = blue;
+            }
+            public int computeMSE(int pixR, int pixG, int pixB) {
+                return ((pixR-red)*(pixR-red) + (pixG-green)*(pixG-green) + (pixB-blue)*(pixB-blue))/3;
+            }
+            public String getName() {
+                return ColourName;
+            }
+
+
+
+            public class ABC{
+
+            }
+                public String main(String[] args) {
+
+
+            //Defining Colournames and Codes
+            ColourCodeInput1 colour1 = new ColourCodeInput1("AntiqueWhite", 0xFA, 0xEB, 0xD7);
+
+            //Add Colours to Array
+            ArrayList<ColourCodeInput1> al = new ArrayList<ColourCodeInput1>();
+
+            al.add(colour1);
+
+
+            //Iterator
+            //TODO: CHECK IF REALLY NEEDED
+            Iterator itr = al.iterator();
+
+            while (itr.hasNext()) {
+                ColourCodeInput1 cci = (ColourCodeInput1) itr.next();
+            }
+
+
+
+
+        public String getColourName(int red, int green, int blue){
+                    //TODO: Im Array nach der Farbe Suchen
+                    ColourCodeInput1 closestMatch = null;
+                    int minMSE = Integer.MAX_VALUE;
+                    int mse;
+                    for (ColourCodeInput1 c : al){
+                        mse = c.computeMSE(red,green,blue);
+                        if(mse < minMSE){
+                            minMSE =mse;
+                            closestMatch = c;
+                        }
+                    }
+                    if (closestMatch!= null){
+                        return closestMatch.getName();
+                    } else {
+                        return null;
+                    }
+                    }
+
+            }
+
+        }}
+*/
 
 
 
@@ -178,4 +262,5 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+//END OF CODE
 }

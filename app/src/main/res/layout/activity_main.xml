@@ -33,10 +33,10 @@
         tools:srcCompat="@color/colorPrimary" />
 
     <TextView
-        android:id="@+id/txt_hohe"
+        android:id="@+id/txt_HEX"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="HEX Code: #ffffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.048"
@@ -45,10 +45,10 @@
         app:layout_constraintVertical_bias="0.324" />
 
     <TextView
-        android:id="@+id/txt_breite"
+        android:id="@+id/txt_RGB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:text="RGB Code: 0, 0, 0 "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.592"
