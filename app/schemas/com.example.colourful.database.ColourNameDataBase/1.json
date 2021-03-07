@@ -1,0 +1,40 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "1beb2f42e6b033ad1fd59681524670ce",
+    "entities": [
+      {
+        "tableName": "ColourName",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`HEX_Code` TEXT NOT NULL, `ColourName` TEXT, PRIMARY KEY(`HEX_Code`))",
+        "fields": [
+          {
+            "fieldPath": "HEX_Code",
+            "columnName": "HEX_Code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ColourName",
+            "columnName": "ColourName",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "HEX_Code"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1beb2f42e6b033ad1fd59681524670ce')"
+    ]
+  }
+}

@@ -19,6 +19,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.colourful.database.ColourName;
+import com.example.colourful.database.ColourNameDataBase;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -115,26 +118,25 @@ public class MainActivity extends AppCompatActivity {
              //Give User RGB and Hex Code of selected Colour
                   txt_RGB.setText("RGB Code: "+r +","+g +","+b);
                   txt_HEX.setText("HEX Code: " + hex);
+                  String ColourNameString = getColourName(hex, r, g, b);
+                  Log.i("ColourName", ColourNameString);
                   Log.i("RGB Code",r +","+g +","+b);
                   Log.i("HEX Code", hex);
 
-             //Getting Colour Name
 
 
 
+              /*
+             List<ColourName> ColourList= getColourName(hex); //Getting Colour Name from Database
+             List<ColourName> Test= getAll();
+                //insertAll();
+                Log.i("Ausgabe",ColourList.toString());
+                Log.i("Ausgabe All",Test.toString());
 
-
-
-
+               */
                     }
                     return true;
                 }
-
-
-
-
-
-
             });
             }
         }
@@ -175,91 +177,157 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    private String getColourName(String HEX_Code, int red, int green, int blue){
+        String ColourName = null;
+        float[] hsv = new float[3];
+        Color.RGBToHSV(red, green, blue, hsv);
+        Log.i("floatausgabe",hsv.toString());
 
+        float hue = hsv[0];
+        float saturation = hsv[1]*10.0f;
+        float value = hsv[2]*10.0f;
 
+        Log.i("hue", String.valueOf(hue));
+        Log.i("saturation", String.valueOf(saturation));
+        Log.i("value", String.valueOf(value));
 
-
-
-
-//-------------------------------------------------------------------------------------------------
-/*
-    public class GetColourSearch {
-        public class ColourCodeInput1 {
-            String ColourName;
-            int red;
-            int green;
-            int blue;
-
-            public void ColourCodeInput(String ColourName, int red, int green, int blue) {
-                this.ColourName = ColourName;
-                this.red = red;
-                this.green = green;
-                this.blue = blue;
-            }
-            public int computeMSE(int pixR, int pixG, int pixB) {
-                return ((pixR-red)*(pixR-red) + (pixG-green)*(pixG-green) + (pixB-blue)*(pixB-blue))/3;
-            }
-            public String getName() {
-                return ColourName;
-            }
-
-
-
-            public class ABC{
+        //Colour Area Matrix in the HSV Colour Circle
+        //Define white spot
+        if (saturation<5 && value >95){
+            ColourName = "White";
+        }
+        //Define black line
+        else if (value < 5){
+            ColourName ="Black";
+        }
+        else {
+            //Define rough colour directions (16 pcs)
+            //Red Area ( Hue 347 to 15)
+            if (hue > 347 || hue <= 15) {
 
             }
-                public String main(String[] args) {
-
-
-            //Defining Colournames and Codes
-            ColourCodeInput1 colour1 = new ColourCodeInput1("AntiqueWhite", 0xFA, 0xEB, 0xD7);
-
-            //Add Colours to Array
-            ArrayList<ColourCodeInput1> al = new ArrayList<ColourCodeInput1>();
-
-            al.add(colour1);
-
-
-            //Iterator
-            //TODO: CHECK IF REALLY NEEDED
-            Iterator itr = al.iterator();
-
-            while (itr.hasNext()) {
-                ColourCodeInput1 cci = (ColourCodeInput1) itr.next();
-            }
-
-
-
-
-        public String getColourName(int red, int green, int blue){
-                    //TODO: Im Array nach der Farbe Suchen
-                    ColourCodeInput1 closestMatch = null;
-                    int minMSE = Integer.MAX_VALUE;
-                    int mse;
-                    for (ColourCodeInput1 c : al){
-                        mse = c.computeMSE(red,green,blue);
-                        if(mse < minMSE){
-                            minMSE =mse;
-                            closestMatch = c;
-                        }
-                    }
-                    if (closestMatch!= null){
-                        return closestMatch.getName();
-                    } else {
-                        return null;
-                    }
-                    }
+            //Orange Area (Hue 16 to 36)
+            else if (hue > 15 && hue <= 36) {
 
             }
+            //Turmeric Area (Hue 37 to 46)
+            else if (hue > 36 && hue <= 46) {
 
-        }}
+            }
+            //Yellow Cheese Area (Hue 47 to 55)
+            else if (hue > 46 && hue <= 55) {
+
+            }
+            //Yellow Area (Hue 55 to 63)
+            else if (hue > 55 && hue <= 63) {
+
+            }
+            //Yellow-Green Area (Hue 64 to 70)
+            else if (hue > 64 && hue <= 70) {
+
+            }
+            //Charitreuse Area (Hue 71 to 82)
+            else if (hue > 70 && hue <= 82) {
+
+            }
+            //Green-Pea Area (Hue 83 to 105)
+            else if (hue > 82 && hue <= 105) {
+
+            }
+            //Green Area (Hue 106 to 133)
+            else if (hue > 105 && hue <= 133) {
+
+            }
+            //Clover Area (Hue 134 to 153)
+            else if (hue > 133 && hue <= 153) {
+
+            }
+            //Emerald Area (Hue 154 to 166)
+            else if (hue > 153 && hue <= 166) {
+
+            }
+            //Malachite Area (Hue 167 to 176)
+            else if (hue > 166 && hue <= 176) {
+
+            }
+            //Cyan Area (Hue 177 to 185)
+            else if (hue > 176 && hue <= 185) {
+
+            }
+            //Turquoise Area (Hue 186 to 195)
+            else if (hue > 185 && hue <= 195) {
+
+            }
+            //Azure Area (Hue 196 to 207)
+            else if (hue > 195 && hue <= 207) {
+
+            }
+            //Royal Blue Area (Hue 208 to 227)
+            else if (hue > 207 && hue <= 227) {
+
+            }
+            //Blue Area (Hue 228 to 253)
+            else if (hue > 228 && hue <= 253) {
+
+            }
+            //Dioxazine Area (Hue 254 to 273)
+            else if (hue > 253 && hue <= 273) {
+
+            }
+            //Violet Area (Hue 274 to 285)
+            else if (hue > 273 && hue <= 285) {
+
+            }
+            //Aniline Area (Hue 286 to 295)
+            else if (hue > 285 && hue <= 295) {
+
+            }
+            //Magenta Area (Hue 296 to 305)
+            else if (hue > 295 && hue <= 305) {
+
+            }
+            //Bougainvillea Area (Hue 306 to 315)
+            else if (hue > 305 && hue <= 315) {
+
+            }
+            //Pink Area (Hue 316 to 326)
+            else if (hue > 315 && hue <= 326) {
+
+            }
+            //Red-Plum Area (Hue 327 to 347)
+            else if (hue > 326 && hue <= 347) {
+
+            }
+        }
+
+
+
+
+        return ColourName;
+    }
+
+
+// Colour Name with Database (NOTFINAL)
+    /*
+
+        private List getColourName(String HEX_CODE){
+        ColourNameDataBase db = ColourNameDataBase.geTDbInstance(this.getApplicationContext());
+        List<ColourName> ColourList =  db.ColourNameDAO().findColourName(HEX_CODE);
+        return ColourList;
+    }
+
+    private List getAll() {
+        ColourNameDataBase db = ColourNameDataBase.geTDbInstance(this.getApplicationContext());
+        List<ColourName> ColourList = db.ColourNameDAO().findAll();
+        return ColourList;
+    }
+        private void insertAll(){
+            ColourNameDataBase db = ColourNameDataBase.geTDbInstance(this.getApplicationContext());
+             db.ColourNameDAO().insertColour(new ColourName("#ffffff","schwarz"));
+
+    }
+
 */
-
-
-
-
-
-
 
 
 //END OF CODE
