@@ -1,12 +1,20 @@
 package com.example.colourful;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,6 +24,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,8 +41,11 @@ import java.util.*;
 
 
 public class MainActivity extends AppCompatActivity {
+
     //Creating Figures
+    Toolbar toolbar;
     Button btn_takePic;
+    ImageButton btn_Settings;
     ImageView m_imgV_Main;
     TextView txt_RGB;
     TextView txt_HEX;
@@ -48,14 +60,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        LoadTheme(getDefault());
         setContentView(R.layout.activity_main);
 
         //Find Figures and Implement them
-        btn_takePic = (Button) findViewById(R.id.btn_takepic);
-        m_imgV_Main = (ImageView) findViewById(R.id.imgV_Main);
-        txt_RGB = (TextView) findViewById(R.id.txt_RGB);
-        txt_HEX = (TextView) findViewById(R.id.txt_HEX);
-        txt_ColourName = (TextView) findViewById(R.id.txt_ColourName);
+        btn_takePic = findViewById(R.id.btn_takepic);
+        btn_Settings = findViewById(R.id.btn_Settings);
+        m_imgV_Main = findViewById(R.id.imgV_Main);
+        txt_RGB = findViewById(R.id.txt_RGB);
+        txt_HEX = findViewById(R.id.txt_HEX);
+        txt_ColourName = findViewById(R.id.txt_ColourName);
+
+
+//Settings Button
+        btn_Settings.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent goToSettings = new Intent(MainActivity.this, Settings.class);
+                startActivity(goToSettings);
+            }
+        });
 
 
 //Taking Picture when Button is pressed
@@ -89,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             //Show taken picture in ImageView
             try {
                 m_Bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), currentPath);
+                m_Bitmap = lessResolution(correctBitMapURI(this.currentPath.toString()), 1000, 1000);
                 m_imgV_Main.setImageBitmap(m_Bitmap);
                 txt_HEX.setText("HEX Code: #ffffff");
                 txt_RGB.setText("RGB Code: 0,0,0");
@@ -116,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
 
              //getting Hex value
                   String hex = Integer.toHexString(pixelBuffer);
-                  hex = "#" + hex.substring(2);
+                  if (hex.length() != 8){hex="#ffffff";}else{
+                  hex = "#" + hex.substring(2);}
 
              //Give User RGB and Hex Code of selected Colour
                   txt_RGB.setText("RGB Code: "+r +","+g +","+b);
@@ -177,6 +203,60 @@ public class MainActivity extends AppCompatActivity {
         );
         return image;
     }
+
+
+    public String correctBitMapURI(String CurrentPath){
+        Log.i("Old String", CurrentPath);
+        CurrentPath = CurrentPath.replace("content://com.example.colourful.provider/external_files/Pictures","/sdcard/Pictures");
+        Log.i("New String", CurrentPath);
+
+        return CurrentPath;
+    }
+
+
+
+//Scale Down BitMap for ImageView
+    public static Bitmap lessResolution (String filePath, int width, int height) {
+        int reqHeight = height;
+        int reqWidth = width;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            // Calculate ratios of height and width to requested height and width
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            // Choose the smallest ratio as inSampleSize value, this will guarantee
+            // a final image with both dimensions larger than or equal to the
+            // requested height and width.
+            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+        return inSampleSize;
+    }
+
+
+
+
+
 
 
 
@@ -776,7 +856,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-// Colour Name with Database (NOTFINAL)
+    public void LoadTheme(int Code){
+        switch(Code) {
+            case 0:
+                this.setTheme(R.style.AppTheme);
+                Log.d("Themeloading_Main","Default");
+                break;
+            case 1:
+                this.setTheme(R.style.FirstTheme);
+                Log.d("Themeloading_Main","First");
+                break;
+            case 2:
+                this.setTheme(R.style.SecondTheme);
+                Log.d("Themeloading_Main","Second");
+                break;
+            case 3:
+                this.setTheme(R.style.ThirdTheme);
+                Log.d("Themeloading_Main","Third");
+                break;
+
+        }
+    }
+
+    public int getDefault(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean Appdefault = sharedPreferences.getBoolean("Standard", false);
+        boolean FirstTheme = sharedPreferences.getBoolean("First", false);
+        boolean SecondTheme = sharedPreferences.getBoolean("Second", false);
+        boolean ThirdTheme = sharedPreferences.getBoolean("Third", false);
+
+        if (Appdefault){
+            return 0;
+        } else if (FirstTheme){
+            return 1;
+        } else if (SecondTheme){
+            return 2;
+        } else if (ThirdTheme){
+            return 3;
+        } else{
+            return 0;
+        }
+    }
+
+// Colour Name with Database (NOT FINAL)
     /*
 
         private List getColourName(String HEX_CODE){
