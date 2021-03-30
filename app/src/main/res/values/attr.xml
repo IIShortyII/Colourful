@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <attr name="ButtonColour" format="color"></attr>
+    <attr name="ButtonColour_pressed" format="color"></attr>
+
+    <attr name="PictureBackGround" format="color"></attr>
+    <attr name="Outline" format="color"></attr>
+</resources>

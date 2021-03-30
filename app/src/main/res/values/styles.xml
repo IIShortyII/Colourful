@@ -1,33 +1,60 @@
 <resources>
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- Default App Theme  -->
+        <item name="android:background">#4CAF50</item>
+        <item name="android:textColor">#673AB7</item>
+        <item name="colorPrimary">#AD8CE8</item>
+
+        <item name="colorPrimaryDark">#673AB7</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="ButtonColour">#F46767</item>
+        <item name="ButtonColour_pressed">#CD5555</item>
+        <item name="Outline">#F40101</item>
+        <item name="PictureBackGround">#FF0000</item>
+    </style>
+
+    <style name="FirstTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Red-Green CVD Theme. -->
+        <item name="android:background">#B0CDFA</item>
+        <item name="android:textColor">#000000</item>
+        <item name="colorPrimary">#A098FF</item>   <!-- Toolbar Colour. -->
+
+        <item name="colorPrimaryDark">#C0D2FF</item>  <!-- Status Colour. -->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="ButtonColour">#B0CDFA</item>
+        <item name="ButtonColour_pressed">#A098FF</item>
+        <item name="Outline">#3A3939</item>
+        <item name="PictureBackGround">#FF0000</item>
+    </style>
+    <style name="SecondTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Blue-Yellow CVD Theme. -->
         <item name="android:background">#CDCDCD</item>
         <item name="android:textColor">#000000</item>
         <item name="colorPrimary">#E91E63</item>
 
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">#F63D7C</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
 
-    <style name="FirstTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">#95FF00</item>
-        <item name="android:background">#CBF800</item>
-        <item name="colorPrimaryDark">#4A8000</item>
-        <item name="colorAccent">#000000</item>
-    </style>
-    <style name="SecondTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="ButtonColour">#FA4C4C</item>
+        <item name="ButtonColour_pressed">#A80E0E</item>
+        <item name="Outline">#F40101</item>
+        <item name="PictureBackGround">#FF0000</item>
     </style>
     <style name="ThirdTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- Colour Blind Theme. -->
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textColor">#000000</item>
+        <item name="colorPrimary">#62FF00</item>
+
+        <item name="colorPrimaryDark">#000000</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="ButtonColour">#FFFFFF</item>
+        <item name="ButtonColour_pressed">#000000</item>
+        <item name="Outline">#000000</item>
+        <item name="PictureBackGround">#000000</item>
     </style>
 
 </resources>
