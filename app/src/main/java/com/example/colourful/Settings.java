@@ -3,7 +3,6 @@ package com.example.colourful;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,13 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 public class Settings extends AppCompatActivity {
 
     //Create Buttons
-    Button Apply;
+    ImageButton Apply;
+    Button goToTest;
     RadioGroup ColourTheme;
     RadioButton Standard;
     RadioButton First;
@@ -28,16 +29,16 @@ public class Settings extends AppCompatActivity {
     SharedPreferences sharedPreferences;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        LoadTheme(getDefault());
+        LoadTheme(getDefault());    //Load chosen Theme
         setContentView(R.layout.activity_settings);
 
         Apply = findViewById(R.id.btn_Apply);
+        goToTest = findViewById(R.id.btn_goToTest);
         ColourTheme = findViewById(R.id.rdG_ColourTheme);
         Standard = findViewById(R.id.rdb_Standard);
         First = findViewById(R.id.rdb_FirstOption);
@@ -51,53 +52,57 @@ public class Settings extends AppCompatActivity {
 
         loadRadioButtons();
 
-        Apply.setOnClickListener(new View.OnClickListener(){
+        Apply.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View v){
+            public void onClick(View v) {
+                //Applying choosen theme and saving RadioButton
+                //Jumping to MainActivity after Applying Theme
                 saveRadioButtons();
-                Intent reset = new Intent(getApplicationContext(),Settings.class);
+                Intent reset = new Intent(getApplicationContext(), Settings.class);
                 startActivity(reset);
                 Intent goBack = new Intent(Settings.this, MainActivity.class);
                 startActivity(goBack);
                 finish();
             }
         });
+
+        goToTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent goSetting = new Intent(Settings.this, CVD_Test.class);
+                startActivity(goSetting);
+            }
+        });
     }
 
-    public class Radio_check implements CompoundButton.OnCheckedChangeListener{
+
+    public class Radio_check implements CompoundButton.OnCheckedChangeListener {
 
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            if (Standard.isChecked()){
-                Log.d("Radio","Standard");
+        //Checking which RadioButton is Checked
+            if (Standard.isChecked()) {
+                Log.d("Radio", "Standard");
                 Themecode = 0;
-                //saveRadioButtons();
-            }
-            else if (First.isChecked()){
-                Log.d("Radio","First");
+            } else if (First.isChecked()) {
+                Log.d("Radio", "First");
                 Themecode = 1;
-                //saveRadioButtons();
-            }
-            else if (Second.isChecked()){
-                Log.d("Radio","Second");
+            } else if (Second.isChecked()) {
+                Log.d("Radio", "Second");
                 Themecode = 2;
-                //saveRadioButtons();
-            }
-            else if (Third.isChecked()){
-                Log.d("Radio","Third");
+            } else if (Third.isChecked()) {
+                Log.d("Radio", "Third");
                 Themecode = 3;
-                //saveRadioButtons();
             }
         }
     }
 
-    public void LoadTheme(int Code){
-        switch(Code) {
+    public void LoadTheme(int Code) {
+        switch (Code) {
             case 0:
                 this.setTheme(R.style.AppTheme);
-                Log.d("Themeloading","Default");
+                Log.d("Themeloading", "Default");
                 break;
             case 1:
                 this.setTheme(R.style.FirstTheme);
@@ -112,29 +117,28 @@ public class Settings extends AppCompatActivity {
         }
     }
 
-    public int getDefault(){
+    public int getDefault() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean Appdefault = sharedPreferences.getBoolean("Standard", false);
         boolean FirstTheme = sharedPreferences.getBoolean("First", false);
         boolean SecondTheme = sharedPreferences.getBoolean("Second", false);
         boolean ThirdTheme = sharedPreferences.getBoolean("Third", false);
 
-        if (Appdefault){
+        if (Appdefault) {
             return 0;
-        } else if (FirstTheme){
+        } else if (FirstTheme) {
             return 1;
-        } else if (SecondTheme){
+        } else if (SecondTheme) {
             return 2;
-        } else if (ThirdTheme){
+        } else if (ThirdTheme) {
             return 3;
-        } else{
+        } else {
             return 0;
         }
     }
 
 
-
-    public void saveRadioButtons(){
+    public void saveRadioButtons() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("Standard", Standard.isChecked());
@@ -144,7 +148,7 @@ public class Settings extends AppCompatActivity {
         editor.apply();
     }
 
-    public void loadRadioButtons(){
+    public void loadRadioButtons() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Standard.setChecked(sharedPreferences.getBoolean("Standard", false));
         First.setChecked(sharedPreferences.getBoolean("First", false));
@@ -152,9 +156,6 @@ public class Settings extends AppCompatActivity {
         Third.setChecked(sharedPreferences.getBoolean("Third", false));
 
     }
-
-
-
 
 
     //End Of Code

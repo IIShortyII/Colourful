@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Settings"></activity>
+        <activity android:name=".CVD_Test"></activity>
+        <activity android:name=".Settings" />
         <activity android:name=".MainActivity" />
 
         <provider
@@ -39,7 +40,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
