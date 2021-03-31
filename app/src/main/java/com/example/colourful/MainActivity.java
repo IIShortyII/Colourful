@@ -3,13 +3,16 @@ package com.example.colourful;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.preference.PreferenceManager;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -27,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.colourful.database.ColourName;
 import com.example.colourful.database.ColourNameDataBase;
@@ -73,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         txt_ColourName = findViewById(R.id.txt_ColourName);
 
 
+
+
+
 //Settings Button
         btn_Settings.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -86,21 +93,26 @@ public class MainActivity extends AppCompatActivity {
         btn_takePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri DummyUri = setDummyFile();
-                //Todo: Delete Old Files if Cache is to big
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if(ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED
+                        && ContextCompat.checkSelfPermission(MainActivity.this,Manifest.permission.CAMERA)== PackageManager.PERMISSION_GRANTED) {
+                    Uri DummyUri = setDummyFile();
+                    //Todo: Delete Old Files if Cache is to big
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                //Checking if Cam available
-                if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
-                    //Checking if Dummy File is available
-                    if (DummyUri != null) {
-                        //Define Saving Path for taken Picture
-                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, DummyUri);
-                        //Open Camera
-                        startActivityForResult(cameraIntent, 0);
+                    //Checking if Cam available
+                    if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+                        //Checking if Dummy File is available
+                        if (DummyUri != null) {
+                            //Define Saving Path for taken Picture
+                            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, DummyUri);
+                            //Open Camera
+                            startActivityForResult(cameraIntent, 0);
                         }
-                }
-            }
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this, "No Access to Storage or Camera. Please give Access Manually over Android Settings.",Toast.LENGTH_LONG).show();
+                }}
         });
     }
 //Receiving Taken Picture
