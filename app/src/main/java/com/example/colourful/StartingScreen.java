@@ -1,6 +1,5 @@
 package com.example.colourful;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -46,14 +45,6 @@ public class StartingScreen extends AppCompatActivity {
 
 //-----Subroutines----
 
-    public void setUpSecondTime(){
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("FirstTime", false);
-        editor.apply();
-
-
-    }
     public boolean checkFirstTime(){
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean FirstTime = sharedPreferences.getBoolean("FirstTime", true);

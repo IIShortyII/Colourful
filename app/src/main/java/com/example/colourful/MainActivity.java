@@ -141,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                         m_imgV_Main.setDrawingCacheEnabled(true);
                         m_imgV_Main.buildDrawingCache(true);
                         Bitmap BitmapBuffer = m_imgV_Main.getDrawingCache();
-                        //TODO: CHECK CRASHING WHILE TOUCHING OUT OF BITMAP
+                        if ((event.getX()>=0) && (event.getX()<BitmapBuffer.getWidth())
+                            && (event.getY()>=0) && (event.getY()<BitmapBuffer.getHeight())){
                         int pixelBuffer = BitmapBuffer.getPixel((int) event.getX(), (int) event.getY());
                         Log.i("Pixl",""+pixelBuffer);
 
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Ausgabe All",Test.toString());
 
                */
-                    }
+                    };}
                     return true;
                 }
             });
