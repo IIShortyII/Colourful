@@ -81,7 +81,7 @@ public class Settings extends AppCompatActivity {
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //Checking which RadioButton is Checked
+            //Checking which RadioButton is Checked
             if (Standard.isChecked()) {
                 Log.d("Radio", "Standard");
                 Themecode = 0;

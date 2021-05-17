@@ -2,15 +2,14 @@ package com.example.colourful;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
+
 import androidx.preference.PreferenceManager;
 
-import android.Manifest;
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,7 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import java.util.ArrayList;
 
@@ -123,31 +122,25 @@ public class CVD_Test extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
-
-
-
-//-----Subroutines----
-public void setUpSecondTime(){
-    sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    SharedPreferences.Editor editor = sharedPreferences.edit();
-    editor.putBoolean("FirstTime", false);
-    editor.apply();}
-
-
-    public boolean checkAnswer(int Ans, int Counter){
-        int realcounter = Counter-1;
-        if (Ans ==Solutions.get(realcounter)){
-            return true;
-        }else{return false;}
+    //-----Subroutines----
+    public void setUpSecondTime() {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("FirstTime", false);
+        editor.apply();
     }
 
-    public void populateSolutions(){
+
+    public boolean checkAnswer(int Ans, int Counter) {
+        int realcounter = Counter - 1;
+        if (Ans == Solutions.get(realcounter)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void populateSolutions() {
         Solutions.add(12);
         Solutions.add(8);
         Solutions.add(6);
@@ -188,20 +181,20 @@ public void setUpSecondTime(){
         Solutions.add(1);
     }
 
-    public int nextPlate(){
-        int id = CVD_Test.this.getResources().getIdentifier("mipmap/ishi_plate_"+counter,null,CVD_Test.this.getPackageName());
+    public int nextPlate() {
+        int id = CVD_Test.this.getResources().getIdentifier("mipmap/ishi_plate_" + counter, null, CVD_Test.this.getPackageName());
         return id;
     }
 
     //First Alert
-    public void TestAlert(){
+    public void TestAlert() {
         new AlertDialog.Builder(this)
                 .setTitle("Attention")
                 .setMessage("This test is not a substitute for a professional eye test by an ophthalmologist, " +
                         "nor is it representative of a diagnosis of any kind. If you suspect you to have CVD, consult an ophthalmologist.")
                 .setPositiveButton("I understand ", (dialog, which) -> {
 
-                }
+                        }
                 ).create().show();
     }
 
@@ -228,6 +221,7 @@ public void setUpSecondTime(){
         }
 
     }
+
     //Getting chosen Theme from SharedPreferences
     public int getDefault() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -248,7 +242,6 @@ public void setUpSecondTime(){
             return 0;
         }
     }
-
 
 
     //---------------END OF CODE---------------------

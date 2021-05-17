@@ -1,18 +1,16 @@
 package com.example.colourful;
 
-import androidx.annotation.Nullable;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
+
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -40,20 +38,17 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import java.util.*;
 
 
 public class MainActivity extends AppCompatActivity {
 
     //Creating Figures
-    Toolbar toolbar;
     Button btn_takePic;
     ImageButton btn_Settings;
     ImageView m_imgV_Main;
     TextView txt_RGB;
     TextView txt_HEX;
     TextView txt_ColourName;
-    //String m_currentPhotoPath;
     Uri currentPath;
     Bitmap m_Bitmap;
     static final int REQUEST_IMAGE_CAPTURE = 1;
@@ -93,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                         && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                         && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     Uri DummyUri = setDummyFile();
-                    //Todo: Delete Old Files if Cache is to big
+
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
                     //Checking if Cam available
@@ -138,42 +133,42 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
+                        m_imgV_Main.setDrawingCacheEnabled(false);
                         m_imgV_Main.setDrawingCacheEnabled(true);
                         m_imgV_Main.buildDrawingCache(true);
                         Bitmap BitmapBuffer = m_imgV_Main.getDrawingCache();
-                        if ((event.getX()>=0) && (event.getX()<BitmapBuffer.getWidth())
-                            && (event.getY()>=0) && (event.getY()<BitmapBuffer.getHeight())){
-                        int pixelBuffer = BitmapBuffer.getPixel((int) event.getX(), (int) event.getY());
-                        Log.i("Pixl",""+pixelBuffer);
+                        if ((event.getX() >= 0) && (event.getX() < BitmapBuffer.getWidth())
+                                && (event.getY() >= 0) && (event.getY() < BitmapBuffer.getHeight())) {
+                            int pixelBuffer = BitmapBuffer.getPixel((int) event.getX(), (int) event.getY());
+                            Log.i("Pixl", "" + pixelBuffer);
 
 
+                            //getting RGB values
+                            int r = Color.red(pixelBuffer);
+                            int g = Color.green(pixelBuffer);
+                            int b = Color.blue(pixelBuffer);
 
+                            //getting Hex value
+                            String hex = Integer.toHexString(pixelBuffer);
+                            if (hex.length() != 8) {
+                                hex = "#ffffff";
+                            } else {
+                                hex = "#" + hex.substring(2);
+                            }
 
-                        //getting RGB values
-                        int r = Color.red(pixelBuffer);
-                        int g = Color.green(pixelBuffer);
-                        int b = Color.blue(pixelBuffer);
-
-                        //getting Hex value
-                        String hex = Integer.toHexString(pixelBuffer);
-                        if (hex.length() != 8) {
-                            hex = "#ffffff";
-                        } else {
-                            hex = "#" + hex.substring(2);
-                        }
-
-                        //Give User RGB and Hex Code of selected Colour
-                        txt_RGB.setText("RGB Code: " + r + "," + g + "," + b);
-                        txt_HEX.setText("HEX Code: " + hex);
-                        String ColourNameString = getColourName(hex, r, g, b);
-                        txt_ColourName.setText("Colour Name: " + ColourNameString);
-                        Log.i("RGB Code", r + "," + g + "," + b);
-                        Log.i("HEX Code", hex);
+                            //Give User RGB and Hex Code of selected Colour
+                            txt_RGB.setText("RGB Code: " + r + "," + g + "," + b);
+                            txt_HEX.setText("HEX Code: " + hex);
+                            String ColourNameString = getColourName(hex, r, g, b);
+                            txt_ColourName.setText("Colour Name: " + ColourNameString);
+                            Log.i("RGB Code", r + "," + g + "," + b);
+                            Log.i("HEX Code", hex);
 
 
 
 
               /*
+              NOT IN USE - FOR LATE DATABASE IMPLEMENTATION
              List<ColourName> ColourList= getColourName(hex); //Getting Colour Name from Database
              List<ColourName> Test= getAll();
                 //insertAll();
@@ -181,7 +176,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Ausgabe All",Test.toString());
 
                */
-                    };}
+                        }
+                        ;
+                    }
                     return true;
                 }
             });
@@ -259,10 +256,6 @@ public class MainActivity extends AppCompatActivity {
             // Calculate ratios of height and width to requested height and width
             final int heightRatio = Math.round((float) height / (float) reqHeight);
             final int widthRatio = Math.round((float) width / (float) reqWidth);
-
-            // Choose the smallest ratio as inSampleSize value, this will guarantee
-            // a final image with both dimensions larger than or equal to the
-            // requested height and width.
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
         return inSampleSize;

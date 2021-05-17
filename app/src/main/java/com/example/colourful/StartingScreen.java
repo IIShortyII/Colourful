@@ -30,7 +30,6 @@ public class StartingScreen extends AppCompatActivity {
         setContentView(R.layout.activity_starting_screen);
 
 
-
         //Check API Version before Asking for Permission
         //because in 22 and lower Access is automatically granted
         if (Build.VERSION.SDK_INT >= 23) {
@@ -41,11 +40,9 @@ public class StartingScreen extends AppCompatActivity {
     }
 
 
-
-
 //-----Subroutines----
 
-    public boolean checkFirstTime(){
+    public boolean checkFirstTime() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean FirstTime = sharedPreferences.getBoolean("FirstTime", true);
         return FirstTime;
@@ -64,15 +61,16 @@ public class StartingScreen extends AppCompatActivity {
         }
 
     }
+
     //Jump to MainActivity
     public void goToMainScreen() {
-        if (checkFirstTime()){
+        if (checkFirstTime()) {
             //setUpSecondTime();
             Intent goToTest = new Intent(StartingScreen.this, CVD_Test.class);
             startActivity(goToTest);
-        } else{
-        Intent goToMain = new Intent(StartingScreen.this, MainActivity.class);
-        startActivity(goToMain);
+        } else {
+            Intent goToMain = new Intent(StartingScreen.this, MainActivity.class);
+            startActivity(goToMain);
         }
         finish();
     }
@@ -147,6 +145,7 @@ public class StartingScreen extends AppCompatActivity {
 
         }
     }
+
     //Getting chosen Theme from SharedPreferences
     public int getDefault() {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
